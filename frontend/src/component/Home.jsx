@@ -11,7 +11,7 @@ const Home = () => {
   const getImages = async () => {
     try {
       let response = await fetch('http://localhost:5000/api/v1/images/getImage', {
-        method: 'POST', // Use POST method
+        method: 'GET', // Use POST method
         headers: {
           'Content-Type': 'application/json', // Set the content type if sending JSON
         },
