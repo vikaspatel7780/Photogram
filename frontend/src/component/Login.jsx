@@ -41,12 +41,10 @@ const Login = () => {
       const data = await result.json();
       if (!result.ok) {
         const errorMessage = data.message || "Something went wrong";
-        console.log(data);
         toast.error(errorMessage);
         return;
       }
       dispatch(setUser(data?.data?.user));
-      console.log(data.data.accessToken);
       toast.success(data.message);
       Cookies.set('accessToken', data.data.accessToken, { expires: 1 }); // expires in 1 day
       Cookies.set('refreshToken', data.data.refreshToken, { expires: 7 }); // expires in 7 days

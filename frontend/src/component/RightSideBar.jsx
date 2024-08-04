@@ -32,7 +32,7 @@ const RightSidebar = ({ otherUsers }) => {
               </div>
             </div>
             <div>
-              <Link to={`/profile/${user.username}`}>
+              <Link to={`/otherProfile/${user.username}`}>
                 <button className="px-4 py-1 bg-black text-white rounded-full">
                   Profile
                 </button>

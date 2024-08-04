@@ -18,13 +18,13 @@ const useOtherUsers = (userId) => {
               },
           }
         );
-        console.log(response);
+        // console.log(response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
 
         const data = await response.json();
-        console.log(data.data);
+        // console.log(data.data);
         dispatch(setOtherUser(data.data));
       } catch (error) {
         console.log(error);

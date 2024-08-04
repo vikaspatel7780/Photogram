@@ -8,7 +8,6 @@ import useOtherUsers from '../hooks/useOtherUsers';
 const Home = () => {
     const {user,otherUsers} = useSelector(store => store.user)
   const navigate = useNavigate();
-console.log(user)
 useEffect(()=>{
     if (!user) { 
       navigate("/login");

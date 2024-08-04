@@ -37,7 +37,7 @@ const GetProfile = () => {
               <div className="font-semibold">200 followers</div>
               <div className="font-semibold">300 following</div>
             </div>
-            <div className="font-bold">{user.username}</div>
+            <div className="font-bold">{user.fullName}</div>
             <div className="text-gray-600">Everything is temporary💯💯</div>
           </div>
         </div>

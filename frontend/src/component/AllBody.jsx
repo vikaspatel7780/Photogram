@@ -28,11 +28,11 @@ const Body = () => {
                     element: <ChangePassword />
                 }
                 ,{
-                    path: "profile/username",
+                    path: "profile/:username",
                     element: <MyProfile/>
                 }
                 ,{
-                    path: "profile/:username",
+                    path: "otherProfile/:username",
                     element: <GetProfile/>
                 }
             ]

@@ -37,13 +37,10 @@ const ChangePassword = () => {
         toast.error(data.message || "Something went wrong");
         return;
       }
-
-      console.log("Success response:", data);
       toast.success(data.message || "Password changed successfully");
       navigate('/')
 
     } catch (error) {
-      console.error("Unexpected error:", error);
       toast.error("An unexpected error occurred");
     }
   };

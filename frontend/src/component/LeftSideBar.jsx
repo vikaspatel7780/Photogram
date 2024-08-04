@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { CiHome, CiUser } from "react-icons/ci";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { RiLockPasswordLine } from "react-icons/ri";
@@ -9,11 +9,12 @@ import toast from "react-hot-toast";
 import Logo from "./Logo";
 import USER_API_END_POINT from "../utils/Constant";
 import { setUser } from "../redux/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {user} = useSelector(store => store.user)
 
   const handleLogout = async () => {
     try {
@@ -89,7 +90,7 @@ const LeftSidebar = () => {
         </Link>
         
         <Link
-          to={`/profile/username`}
+          to={`/profile/${user.username}`}
           className="flex items-center px-4 py-2 hover:bg-gray-200 rounded-full transition duration-300 ease-in-out"
         >
           <CiUser size="32px" />

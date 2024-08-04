@@ -14,7 +14,6 @@ const Register = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    console.warn(fullName, email, password, username);
     try {
       const response = await fetch(`${USER_API_END_POINT}/register`, {
         method: "POST",
@@ -32,11 +31,11 @@ const Register = () => {
 
       const data = await response.json()
       if(!response.ok){
-        console.log(data)
+       
         toast.error(data.message)
         return;
       }
-      console.log(data)
+   
       toast.success(data.message);
       navigate("/login");
     } catch (error) {

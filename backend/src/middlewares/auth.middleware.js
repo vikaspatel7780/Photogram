@@ -4,12 +4,12 @@ import { User } from "../models/user.model.js";
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
-    console.log(req.cookies);
+    // console.log(req.cookies);
     const token =
       req.cookies?.accessToken ||
       req.headers["authorization"]?.replace("Bearer ", "");
 
-    console.log(token);
+    // console.log(token);
 
     if (!token) {
       return res.status(401).json({
@@ -25,7 +25,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
       );
 
       if (!user) {
-        console.log(token);
+        // console.log(token);
         return res.status(401).json({
           message: "Unauthorized request",
           success: false,
