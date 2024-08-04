@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import USER_API_END_POINT from "../utils/Constant"
+import USER_API_END_POINT from "../utils/Constant";
 
 const ChangePassword = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,7 +27,7 @@ const ChangePassword = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: 'include', // Ensure this is set correctly
       });
 
       const data = await response.json();
@@ -38,13 +38,11 @@ const ChangePassword = () => {
         return;
       }
       toast.success(data.message || "Password changed successfully");
-      navigate('/')
-
+      navigate('/');
     } catch (error) {
       toast.error("An unexpected error occurred");
     }
   };
-
 
   return (
     <div className="h-screen w-[100%] flex items-center justify-center bg-gray-100">
@@ -52,11 +50,11 @@ const ChangePassword = () => {
         <h2 className="text-2xl font-bold mb-8 text-center">Change Current Password</h2>
         <form className="space-y-4" onSubmit={submitHandler}>
           <div>
-            <label className="block mb-2" htmlFor="name">
+            <label className="block mb-2" htmlFor="oldPassword">
               Old Password
             </label>
             <input
-              type="text"
+              type="password" // Updated to password
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
               className="w-full border border-gray-300 rounded-md py-2 px-4"
@@ -64,7 +62,7 @@ const ChangePassword = () => {
           </div>
           
           <div>
-            <label className="block mb-2" htmlFor="password">
+            <label className="block mb-2" htmlFor="newPassword">
               New Password
             </label>
             <input
@@ -76,7 +74,7 @@ const ChangePassword = () => {
             />
           </div>
           <div>
-            <label className="block mb-2" htmlFor="password">
+            <label className="block mb-2" htmlFor="confirmPassword">
               Confirm New Password
             </label>
             <input
@@ -96,7 +94,6 @@ const ChangePassword = () => {
             </button>
           </div>
         </form>
-       
       </div>
     </div>
   );

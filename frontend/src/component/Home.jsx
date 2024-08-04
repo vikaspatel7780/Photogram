@@ -18,6 +18,7 @@ const Home = () => {
         headers: {
           'Content-Type': 'application/json', // Set the content type if sending JSON
         },
+         
       });
 
       if (!response.ok) {
