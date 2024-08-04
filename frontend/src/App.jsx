@@ -1,20 +1,15 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Home from './component/Home';
-import UploadPhoto from './component/UploadPhoto';
-import Navbar from './component/Navbar';
-import Footer from './component/Footer'
+import './index.css';
+import AllBody from './component/AllBody';
+import {Toaster} from "react-hot-toast"
 
-const App = () => (
-  <>
-    <Navbar/>
-  
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/upload" element={<UploadPhoto />} />
-    </Routes>
-    <Footer/>
-  </>
-);
+function App() {
+  return (
+    <div className="App">
+      <AllBody/>
+      <Toaster/>
+    </div>
+  );
+}
 
 export default App;
+

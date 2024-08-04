@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
         required:true,
         unique:true
     },
-    name:{
+    fullName:{
         type:String,
         required:true
     },
@@ -21,6 +21,22 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     }, 
+    followers:{
+        type:Array,
+        default:[]
+    },
+    following:{
+        type:Array,
+        default:[]
+    }, 
+    bookmarks:{
+        type:Array,
+        default:[]
+    },
+    bio:{
+        type:Array,
+        default:[]
+    },
     refreshToken: {
         type: String
     }
@@ -38,6 +54,7 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password, this.password)
 }
+
 
 userSchema.methods.generateAccessToken = function(){
     return jwt.sign(

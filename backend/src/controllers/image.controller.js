@@ -5,25 +5,39 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const uploadImage = asyncHandler(async (req, res) => {
-  const { imageName } = req.body;
+  const { imageName,userId} = req.body;
   if (imageName === "") {
-    throw new ApiError(404, "Image Name is required");
+    return res.status(404).json({
+      message: "Image Name is required",
+      success: false
+  })
   }
 
   const imageLocalPath = req.files?.imageUrl[0]?.path;
   if (!imageLocalPath) {
-    throw new ApiError(400, "Image file is required");
+    return res.status(401).json({
+      message: "Image file Name is required",
+      success: false
+  })
   }
   const imageUrl = await uploadOnCloudinary(imageLocalPath);
   if (!imageUrl) {
-    throw new ApiError(400, "Image file is required");
+    return res.status(400).json({
+      message: "Image file is required",
+      success: false
+  })
   }
   const UploadImage1 = await UploadImage.create({
     imageName,
     imageUrl: imageUrl.url,
+    userId:userId
+
   });
   if (!UploadImage1) {
-    throw new ApiError(500, "Something went wrong while Uploading the Image");
+    return res.status(404).json({
+      message: "Something went wrong while Uploading the Image",
+      success: false
+  })
   }
   res
     .status(200)

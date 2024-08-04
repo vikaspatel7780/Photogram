@@ -4,9 +4,20 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
-const generateAccessAndRefereshTokens = async (userId) => {
+const generateAccessAndRefreshTokens = async (userId) => {
   try {
+    // Ensure the userId is valid and not null or undefined
+    if (!userId) {
+      throw new ApiError(400, "Invalid user ID");
+    }
+
     const user = await User.findById(userId);
+
+    // Ensure the user exists
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
@@ -15,12 +26,18 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
+    // Provide more specific error information if available
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
     throw new ApiError(
       500,
-      "Something went wrong while generating referesh and access token"
+      "Something went wrong while generating refresh and access tokens"
     );
   }
 };
+
 
 const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
@@ -31,20 +48,26 @@ const registerUser = asyncHandler(async (req, res) => {
   // check for user creation
   // return res
 
-  const { name, email, password, username } = req.body;
-  if (name === "" || email === "" || password === "" || username === "") {
-    throw new ApiError(404, "Please fill all the fields");
+  const { fullName, email, password, username } = req.body;
+  if (fullName === "" || email === "" || password === "" || username === "") {
+    return res.status(409).json({
+      message: "Please fill all the fields.",
+      success: false
+  })
   }
   const existedUser = await User.findOne({
     $or: [{ email }, { username }],
   });
 
   if (existedUser) {
-    throw new ApiError(409, "User with email or username already exists");
+    return res.status(409).json({
+      message: "User with email or username already exists.",
+      success: false
+  })
   }
 
   const user = await User.create({
-    name,
+    fullName,
     email,
     password,
     username: username.toLowerCase(),
@@ -54,7 +77,11 @@ const registerUser = asyncHandler(async (req, res) => {
   );
 
   if (!createdUser) {
-    throw new ApiError(500, "Something went wrong while registering the user");
+    res.status(500)
+    .json({
+      message: "Something went wrong while registering the user",
+      success: false
+    })
   }
   return res
     .status(200)
@@ -65,12 +92,12 @@ const loginUser = asyncHandler(async (req, res) => {
   // get user details from frontend
   // validation - not empty
   const { username, email, password } = req.body;
-  if (username === "" || email === "") {
-    throw new ApiError(404, "Please fill all the fields");
-  }
-
+  
   if (!username && !email) {
-    throw new ApiError(400, "username or email is required");
+    return res.status(401).json({
+      message: "All fields are required.",
+      success: false
+  })
   }
 
   const user = await User.findOne({
@@ -78,12 +105,19 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    throw new ApiError(404, "User does not exist");
+    return res.status(404).json({
+      message: "User does not exist.",
+      success: false
+  })
+   
   }
 
   const isPasswordCorrect = await user.isPasswordCorrect(password);
   if (!isPasswordCorrect) {
-    throw new ApiError(401, "Invalid password");
+    return res.status(404).json({
+      message: "Invalid password.",
+      success: false
+  })
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
@@ -96,7 +130,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
   };
 
   return res
@@ -131,7 +165,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
   };
 
   return res
@@ -142,12 +176,25 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
+ if(oldPassword ==="" || newPassword === ""){
+    return res.
+    status(404)
+    .json({
+      message:"Please fill all the fields.",
+      success: false
+    })
+  }
 
   const user = await User.findById(req.user?._id);
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
-
+  
+  
   if (!isPasswordCorrect) {
-    throw new ApiError(400, "Invalid old password");
+    return res.status(401).json({
+      message: "Invailed Old Password",
+      success: false
+  })
+   
   }
 
   user.password = newPassword;
@@ -159,52 +206,58 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken =
-    req.cookies.refreshToken || req.body.refreshToken;
+  const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
-    throw new ApiError(401, "unauthorized request");
+    return res.status(401).json({
+      message: "Unauthorized request",
+      success: false,
+    });
   }
 
   try {
-    const decodedToken = jwt.verify(
-      incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    );
+    const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
 
     const user = await User.findById(decodedToken?._id);
 
     if (!user) {
-      throw new ApiError(401, "Invalid refresh token");
+      return res.status(401).json({
+        message: "Invalid refresh token",
+        success: false,
+      });
     }
 
-    if (incomingRefreshToken !== user?.refreshToken) {
-      throw new ApiError(401, "Refresh token is expired or used");
+    if (incomingRefreshToken !== user.refreshToken) {
+      return res.status(401).json({
+        message: "Refresh token is expired or used",
+        success: false,
+      });
     }
 
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
     };
 
-    const { accessToken, newRefreshToken } =
-      await generateAccessAndRefereshTokens(user._id);
+    const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
 
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", newRefreshToken, options)
-      .json(
-        new ApiResponse(
-          200,
-          { accessToken, refreshToken: newRefreshToken },
-          "Access token refreshed"
-        )
-      );
+      .json({
+        statusCode: 200,
+        data: { accessToken, refreshToken: newRefreshToken },
+        message: "Access token refreshed",
+      });
   } catch (error) {
-    throw new ApiError(401, error?.message || "Invalid refresh token");
+    return res.status(401).json({
+      message: error.message || "Invalid refresh token",
+      success: false,
+    });
   }
 });
+
 
 const getCurrentUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select(
@@ -218,6 +271,29 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "User Get Successfully"));
 });
 
+const getOtherProfile = asyncHandler(async (req, res) =>{
+  const { username } = req.params;
+  try {
+    const user = await User.find({ username:{ $ne: username } }).select(
+      "-password -refreshToken"
+      );
+    if (!user) {
+      res.status(404)
+      .json({
+        message:"User Not Fount",
+        success: false,
+      })
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User Get Successfully"));
+
+
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+})
+
 export {
   registerUser,
   loginUser,
@@ -225,4 +301,5 @@ export {
   logoutUser,
   refreshAccessToken,
   getCurrentUser,
+  getOtherProfile
 };

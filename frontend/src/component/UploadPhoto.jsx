@@ -1,50 +1,52 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import USER_API_END_POINT from "../utils/Constant"
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 const UploadPhoto = () => {
   const [imageFile, setImageFile] = useState(null); // State to store file
   const [imageName, setImageName] = useState(""); // State to store image name
   const [loading, setLoading] = useState(false); // State for loading status
-  const [message, setMessage] = useState(""); // State for messages
-
+  const {user} =useSelector((store)=>store.user)
   const navigate = useNavigate(); // Initialize the navigate function
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
 
     if (!imageFile || !imageName) {
-      setMessage("Both image file and image name are required.");
+      toast.error("Both image file and image name are required.");
       return;
     }
 
     setLoading(true); // Set loading to true
-
     const formData = new FormData();
     formData.append("imageUrl", imageFile); // Append file to FormData
     formData.append("imageName", imageName); // Append image name to FormData
+    formData.append("userId", user.username); // Append image name to FormData
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/images/uploadImage", {
+      const response = await fetch(`${USER_API_END_POINT}/uploadImage`, {
         method: "POST",
         body: formData, // Send FormData with the file
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.Errors}`);
       }
 
       const result = await response.json();
 
       if (result.success) {
-        setMessage("Image uploaded successfully.");
+        toast.success("Image uploaded successfully.");
         setImageFile(null); // Reset file input
         setImageName(""); // Reset image name
         navigate("/"); // Navigate to the home route on successful upload
       } else {
-        setMessage(`Error uploading image: ${result.message}`);
+        toast.error(`Error uploading image: ${result.message}`);
       }
     } catch (error) {
-      setMessage(`Error during image upload: ${error.message}`);
+      toast.error(`Error during image upload: ${error.message}`);
     } finally {
       setLoading(false); // Set loading to false
     }
@@ -76,7 +78,6 @@ const UploadPhoto = () => {
         >
           {loading ? "Uploading..." : "Submit"}
         </button>
-        {message && <p className="mt-4 text-lg">{message}</p>} {/* Display message */}
       </form>
     </div>
   );

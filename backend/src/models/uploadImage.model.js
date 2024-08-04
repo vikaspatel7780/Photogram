@@ -9,6 +9,19 @@ const ImageSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-})
+    like:{
+        type:Array,
+        default:[]
+    },
+    userId:{
+        type:String,
+        ref:"User",
+        required:true
+    },
+},
+    {
+        timestamps:true
+    }
+)
 
 export const UploadImage = mongoose.model("UploadImage",ImageSchema);
