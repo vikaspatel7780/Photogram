@@ -30,8 +30,6 @@ const GetProfile = () => {
         <div className="font-bold">{username}</div>
         <FiAtSign size={25} />
       </div>
-
-      {/* Profile content */}
       <div className="mt-16 md:mt-8 w-full h-auto border-b-4 pb-4">
         <div className="flex flex-col md:flex-row justify-center items-center md:items-end gap-6 md:gap-20">
           <Avatar
