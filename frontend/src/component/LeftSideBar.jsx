@@ -9,6 +9,8 @@ import Logo from "./Logo";
 import USER_API_END_POINT from "../utils/Constant";
 import { setOtherUser, setUser } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+// import dotenv from 'dotenv'
+// dotenv.config()
 
 const LeftSidebar = () => {
   const navigate = useNavigate();

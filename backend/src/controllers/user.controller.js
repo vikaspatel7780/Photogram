@@ -3,6 +3,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {

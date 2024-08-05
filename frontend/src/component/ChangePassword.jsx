@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import USER_API_END_POINT from "../utils/Constant";
+// import USER_API_END_POINT from "../utils/Constant";
+// import dotenv from 'dotenv'
+// dotenv.config()
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ const ChangePassword = () => {
     }
 
     try {
-      const response = await fetch(`${USER_API_END_POINT}/changePassword`, {
+      const response = await fetch(`${process.env.REACT_APP_USER_API_END_POINT}/changePassword`, {
         method: "POST",
         body: JSON.stringify({
           oldPassword,

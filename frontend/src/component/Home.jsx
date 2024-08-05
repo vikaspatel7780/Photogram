@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import USER_API_END_POINT from "../utils/Constant"
 import Card from "./Card";
 import Header from "./Header";
+// import dotenv from 'dotenv'
+// dotenv.config()
 
 const Home = () => {
   const [allImages, setAllImages] = useState([]);

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import USER_API_END_POINT from "../utils/Constant"
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import USER_API_END_POINT from '../utils/Constant'
+// import dotenv from 'dotenv'
+// dotenv.config()
 
 const UploadPhoto = () => {
   const [imageFile, setImageFile] = useState(null); // State to store file

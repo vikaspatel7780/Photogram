@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 
 const GetProfile = () => {
   const { user } = useSelector((state) => state.user);
+  console.log(user)
 
   return (
     <div className="container h-screen p-4 md:p-6">
@@ -37,7 +38,7 @@ const GetProfile = () => {
               <div className="font-semibold">200 followers</div>
               <div className="font-semibold">300 following</div>
             </div>
-            <div className="font-bold">{user.fullName}</div>
+            <div className="font-bold">{user?.name}</div>
             <div className="text-gray-600">Everything is temporary💯💯</div>
           </div>
         </div>

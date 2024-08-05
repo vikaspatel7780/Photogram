@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import USER_API_END_POINT from "../utils/Constant";
 import { useDispatch } from "react-redux";
 import Cookies from "js-cookie"; 
 import { setUser } from '../redux/userSlice';
+import USER_API_END_POINT from '../utils/Constant';
 
 const Login = () => {
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -19,6 +20,7 @@ const Login = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when request starts
 
     const isEmail = isValidEmail(usernameOrEmail);
     const email = isEmail ? usernameOrEmail : "";
@@ -27,7 +29,7 @@ const Login = () => {
     try {
       const result = await fetch(`${USER_API_END_POINT}/login`, {
         method: "POST",
-        withCredentials: true, // Correct the credentials property
+        withCredentials: true,
         body: JSON.stringify({
           email: email,
           username: username,
@@ -49,10 +51,10 @@ const Login = () => {
       Cookies.set('accessToken', data.data.accessToken, { expires: 1 }); // expires in 1 day
       Cookies.set('refreshToken', data.data.refreshToken, { expires: 7 }); // expires in 7 days
       navigate("/");
-      
-      
     } catch (error) {
       toast.error(`Something went wrong: ${error.message}`);
+    } finally {
+      setLoading(false); // Set loading to false once request is done
     }
   };
 
@@ -89,8 +91,9 @@ const Login = () => {
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded-md"
+              disabled={loading} // Disable button when loading
             >
-              Login
+              {loading ? "Loading..." : "Login"} {/* Show loading text */}
             </button>
           </div>
         </form>

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setOtherUser } from "../redux/userSlice";
-import USER_API_END_POINT from "../utils/Constant";
+import USER_API_END_POINT from '../utils/Constant'
 
 const useOtherUsers = (userId) => {
   const dispatch = useDispatch();
@@ -14,17 +14,16 @@ const useOtherUsers = (userId) => {
           {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json', // Set the content type if sending JSON
-              },
+              'Content-Type': 'application/json', // Set the content type if sending JSON
+            },
           }
         );
-        // console.log(response);
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
-        // console.log(data.data);
         dispatch(setOtherUser(data.data));
       } catch (error) {
         console.log(error);

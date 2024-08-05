@@ -1,6 +1,9 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
@@ -13,7 +16,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
 
     if (!token) {
       return res.status(401).json({
-        message: "Unauthorized requestff",
+        message: "Unauthorized request",
         success: false,
       });
     }

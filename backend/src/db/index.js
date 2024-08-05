@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv'
 
-
+dotenv.config();
 const startServer = async () => {
   try {
     const dbURI = `${process.env.MONGODB_URL}/Photogram`;
