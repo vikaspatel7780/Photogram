@@ -7,12 +7,12 @@ dotenv.config();
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
-    // console.log(req.cookies);
+  
     const token =
       req.cookies?.accessToken ||
       req.headers["authorization"]?.replace("Bearer ", "");
 
-    // console.log(token);
+ 
 
     if (!token) {
       return res.status(401).json({
