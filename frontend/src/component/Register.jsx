@@ -14,37 +14,37 @@ const Register = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    // setLoading(true); // Set loading to true when request starts
+    setLoading(true); // Set loading to true when request starts
 
-    // try {
-    //   const response = await fetch(`${USER_API_END_POINT}/register`, {
-    //     method: "POST",
-    //     withCredentials: true,
-    //     body: JSON.stringify({
-    //       fullName: fullName,
-    //       email: email,
-    //       username: username,
-    //       password: password,
-    //     }),
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
+    try {
+      const response = await fetch(`${USER_API_END_POINT}/register`, {
+        method: "POST",
+        withCredentials: true,
+        body: JSON.stringify({
+          fullName: fullName,
+          email: email,
+          username: username,
+          password: password,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    //   const data = await response.json();
-    //   if (!response.ok) {
-    //     toast.error(data.message);
-    //     return;
-    //   }
+      const data = await response.json();
+      if (!response.ok) {
+        toast.error(data.message);
+        return;
+      }
 
-    //   toast.success(data.message);
-    //   navigate("/login");
-    // } catch (error) {
-    //   console.error("Error registering user:", error);
-    //   toast.error(`Error registering user: ${error.message}`);
-    // } finally {
-    //   setLoading(false); // Set loading to false once request is done
-    // }
+      toast.success(data.message);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error registering user:", error);
+      toast.error(`Error registering user: ${error.message}`);
+    } finally {
+      setLoading(false); // Set loading to false once request is done
+    }
   };
 
   return (

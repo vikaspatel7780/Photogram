@@ -103,7 +103,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true, // Use secure cookies in production
+    // secure: true, // Use secure cookies in production
     sameSite: 'None' // Ensure cross-origin requests are handled
   };
 
@@ -137,10 +137,10 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true, // Use secure cookies in production
+    // secure: true, // Use secure cookies in production
     sameSite: 'None' // Ensure cross-origin requests are handled
   };
-
+ 
   return res
     .status(200)
     .clearCookie("accessToken", options)
@@ -204,7 +204,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true, // Use secure cookies in production
+      // secure: true, // Use secure cookies in production
       sameSite: 'None' // Ensure cross-origin requests are handled
     };
 
