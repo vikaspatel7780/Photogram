@@ -9,14 +9,12 @@ dotenv.config();
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
-    // Ensure the userId is valid and not null or undefined
     if (!userId) {
       throw new ApiError(400, "Invalid user ID");
     }
 
     const user = await User.findById(userId);
 
-    // Ensure the user exists
     if (!user) {
       throw new ApiError(404, "User not found");
     }
@@ -29,44 +27,30 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    // Provide more specific error information if available
     if (error instanceof ApiError) {
       throw error;
     }
 
-    throw new ApiError(
-      500,
-      "Something went wrong while generating refresh and access tokens"
-    );
+    throw new ApiError(500, "Something went wrong while generating refresh and access tokens");
   }
 };
 
-
 const registerUser = asyncHandler(async (req, res) => {
-  // get user details from frontend
-  // validation - not empty
-  // check if user already exists: username, email
-  // create user object - create entry in db
-  // remove password and refresh token field from response
-  // check for user creation
-  // return res
-
   const { fullName, email, password, username } = req.body;
   if (fullName === "" || email === "" || password === "" || username === "") {
-    return res.status(409).json({
+    return res.status(400).json({
       message: "Please fill all the fields.",
       success: false
-  })
+    });
   }
-  const existedUser = await User.findOne({
-    $or: [{ email }, { username }],
-  });
+
+  const existedUser = await User.findOne({ $or: [{ email }, { username }] });
 
   if (existedUser) {
     return res.status(409).json({
       message: "User with email or username already exists.",
       success: false
-  })
+    });
   }
 
   const user = await User.create({
@@ -75,65 +59,52 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     username: username.toLowerCase(),
   });
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+  const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
   if (!createdUser) {
-    res.status(500)
-    .json({
+    return res.status(500).json({
       message: "Something went wrong while registering the user",
       success: false
-    })
+    });
   }
-  return res
-    .status(200)
-    .json(new ApiResponse(200, req.body, "User fetched successfully"));
+  return res.status(200).json(new ApiResponse(200, req.body, "User fetched successfully"));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  // get user details from frontend
-  // validation - not empty
   const { username, email, password } = req.body;
   
   if (!username && !email) {
-    return res.status(401).json({
+    return res.status(400).json({
       message: "All fields are required.",
       success: false
-  })
+    });
   }
 
-  const user = await User.findOne({
-    $or: [{ username }, { email }],
-  });
+  const user = await User.findOne({ $or: [{ username }, { email }] });
 
   if (!user) {
     return res.status(404).json({
       message: "User does not exist.",
       success: false
-  })
-   
+    });
   }
 
   const isPasswordCorrect = await user.isPasswordCorrect(password);
   if (!isPasswordCorrect) {
-    return res.status(404).json({
+    return res.status(401).json({
       message: "Invalid password.",
       success: false
-  })
+    });
   }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id
-  );
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
 
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
   const options = {
     httpOnly: true,
-    secure: false,
+    secure: true, // Use secure cookies in production
+    sameSite: 'None' // Ensure cross-origin requests are handled
   };
 
   return res
@@ -157,9 +128,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
-      $unset: {
-        refreshToken: 1, // this removes the field from document
-      },
+      $unset: { refreshToken: 1 },
     },
     {
       new: true,
@@ -168,7 +137,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: false,
+    secure: true, // Use secure cookies in production
+    sameSite: 'None' // Ensure cross-origin requests are handled
   };
 
   return res
@@ -177,35 +147,30 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged Out"));
 });
+
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
- if(oldPassword ==="" || newPassword === ""){
-    return res.
-    status(404)
-    .json({
-      message:"Please fill all the fields.",
+  if (oldPassword === "" || newPassword === "") {
+    return res.status(400).json({
+      message: "Please fill all the fields.",
       success: false
-    })
+    });
   }
 
   const user = await User.findById(req.user?._id);
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
-  
-  
+
   if (!isPasswordCorrect) {
     return res.status(401).json({
-      message: "Invailed Old Password",
+      message: "Invalid old password",
       success: false
-  })
-   
+    });
   }
 
   user.password = newPassword;
   await user.save({ validateBeforeSave: false });
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Password changed successfully"));
+  return res.status(200).json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -240,6 +205,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      sameSite: 'None' // Ensure cross-origin requests are handled
     };
 
     const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
@@ -261,41 +227,29 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).select(
-  "-password -refreshToken"
-  );
+  const user = await User.findById(req.user._id).select("-password -refreshToken");
   if (!user) {
-    throw ApiError(200, "Something Went Worng");
+    throw new ApiError(500, "Something Went Wrong");
   }
-  return res
-    .status(200)
-    .json(new ApiResponse(200, user, "User Get Successfully"));
+  return res.status(200).json(new ApiResponse(200, user, "User fetched successfully"));
 });
 
-const getOtherProfile = asyncHandler(async (req, res) =>{
+const getOtherProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
   try {
-    const user = await User.find({ username:{ $ne: username } }).select(
-      "-password -refreshToken"
-      );
-    if (!user) {
-      res.status(404)
-      .json({
-        message:"User Not Fount",
+    const users = await User.find({ username: { $ne: username } }).select("-password -refreshToken");
+    if (users.length === 0) {
+      return res.status(404).json({
+        message: "User Not Found",
         success: false,
-      })
+      });
     }
-    return res
-    .status(200)
-    .json(new ApiResponse(200, user, "User Get Successfully"));
-
-
+    return res.status(200).json(new ApiResponse(200, users, "Users fetched successfully"));
   } catch (error) {
-    res.status(500).send('Server error');
+    return res.status(500).send('Server error');
   }
-})
+});
 
 export {
   registerUser,

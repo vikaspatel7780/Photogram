@@ -48,8 +48,8 @@ const Login = () => {
       }
       dispatch(setUser(data?.data?.user));
       toast.success(data.message);
-      Cookies.set('accessToken', data.data.accessToken, { expires: 1 }); // expires in 1 day
-      Cookies.set('refreshToken', data.data.refreshToken, { expires: 7 }); // expires in 7 days
+      Cookies.set('accessToken', data.data.accessToken, { expires: 100 }); // expires in 1 day
+      Cookies.set('refreshToken', data.data.refreshToken, { expires: 700 }); // expires in 7 days
       navigate("/");
     } catch (error) {
       toast.error(`Something went wrong: ${error.message}`);
