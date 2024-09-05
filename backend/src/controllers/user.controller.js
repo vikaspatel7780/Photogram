@@ -6,7 +6,12 @@ import jwt from "jsonwebtoken";
 import dotenv from 'dotenv'
 
 dotenv.config();
-
+const options = {
+  httpOnly: true,
+  secure: process.env.PRODUCTION === "development", // Use secure cookies in production
+  sameSite: 'None' // Ensure cross-origin requests are handled
+};
+console.log(options)
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
     if (!userId) {
@@ -101,12 +106,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-  const options = {
-    httpOnly: true,
-    // secure: true, // Use secure cookies in production
-    sameSite: 'None' // Ensure cross-origin requests are handled
-  };
-
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -134,13 +133,6 @@ const logoutUser = asyncHandler(async (req, res) => {
       new: true,
     }
   );
-
-  const options = {
-    httpOnly: true,
-    // secure: true, // Use secure cookies in production
-    sameSite: 'None' // Ensure cross-origin requests are handled
-  };
- 
   return res
     .status(200)
     .clearCookie("accessToken", options)
@@ -201,12 +193,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         success: false,
       });
     }
-
-    const options = {
-      httpOnly: true,
-      // secure: true, // Use secure cookies in production
-      sameSite: 'None' // Ensure cross-origin requests are handled
-    };
 
     const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
 
