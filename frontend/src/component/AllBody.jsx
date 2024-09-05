@@ -35,6 +35,9 @@ const Body = () => {
                     path: "otherProfile/:username",
                     element: <GetProfile/>
                 }
+                ,{
+                    path: ""
+                }
             ]
         },
         {

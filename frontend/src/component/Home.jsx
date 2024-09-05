@@ -53,7 +53,7 @@ const Home = () => {
               key={index}
               imageUrl  ={image.imageUrl}
               imageName={image.imageName}
-              userId = {image.userId}
+              userId = {image.userId.username}
               createdAt = {image.createdAt}
               className="shadow-lg rounded-lg overflow-hidden transform transition-transform"
             />

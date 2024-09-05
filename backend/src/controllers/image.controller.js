@@ -45,11 +45,11 @@ const uploadImage = asyncHandler(async (req, res) => {
 });
 
 const getImage = asyncHandler(async (req, res) => {
-  const allImages = await UploadImage.find();
+  const allImages = await UploadImage.find().populate('userId')
   if (allImages.length > 0) {
     res
       .status(200)
-      .json(new ApiResponse(200, allImages, "Products retrieved successfully"));
+      .json(new ApiResponse(200, allImages, "Image retrieved successfully"));
   } else {
     throw new ApiError(404, "No products found");
   }
