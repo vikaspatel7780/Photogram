@@ -5,10 +5,9 @@ import Home from './Home';
 import UploadPhoto from './UploadPhoto';
 import ChangePassword from './ChangePassword';
 import Register from './Register';
-import AllHome from './AllHome'; // Assuming you have an AllHome component
+import AllHome from './AllHome'; 
 import MyProfile from './MyProfile'
 import GetProfile from './GetProfile';
-
 const Body = () => {
     const appRouter = createBrowserRouter([
         {
@@ -46,7 +45,7 @@ const Body = () => {
         },
         {
             path: "/register",
-            element: <Register /> // Corrected element to <Register />
+            element: <Register />
         }
     ]);
 
