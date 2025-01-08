@@ -4,7 +4,6 @@ const refreshTokens = async () => {
         method: 'POST',
         credentials: 'include',
       });
-  
       if (!response.ok) {
         throw new Error('Unable to refresh tokens');
       }
