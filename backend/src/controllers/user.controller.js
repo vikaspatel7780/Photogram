@@ -237,6 +237,13 @@ const getOtherProfile = asyncHandler(async (req, res) => {
   }
 });
 
+const like = asyncHandler( (req, res) =>{
+  const { id } = req.params;
+  const { userId } = req.body;
+  console.warm(id, userId)
+
+})
+
 export {
   registerUser,
   loginUser,
