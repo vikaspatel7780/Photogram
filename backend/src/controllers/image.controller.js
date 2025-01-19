@@ -39,8 +39,7 @@ const uploadImage = asyncHandler(async (req, res) => {
       success: false
   })
   }
-  res
-    .status(200)
+  res.status(200)
     .json(new ApiResponse(200, UploadImage1, "Uploading Image Successfully"));
 });
 
